@@ -50,7 +50,7 @@ function cloneTestObject(object) {
 }
 
 function cloneError(err) {
-  return {
+  var result = {
     name: err.name || '',
     stack: err.stack,
     type: err.type || 'Error',
@@ -58,6 +58,11 @@ function cloneError(err) {
     expected: err.expected || null,
     actual: err.actual || null
   };
+
+  if (err && 'uncaught' in err)
+    result.uncaught = err.uncaught;
+
+  return result;
 }
 
 function defaultHandler(type, runner, payload) {

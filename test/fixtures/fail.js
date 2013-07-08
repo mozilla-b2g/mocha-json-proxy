@@ -6,4 +6,11 @@ suite('fail', function() {
   test('async', function(done) {
     done(new Error('async'));
   });
+
+  test('uncaught', function() {
+    process.nextTick(function() {
+      throw new Error('woot');
+    });
+  });
+
 });
