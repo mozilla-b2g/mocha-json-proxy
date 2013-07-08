@@ -24,9 +24,7 @@ function runFixture(test, callback) {
       } catch (e) {
         console.error(e);
       }
-      var event = json[0];
-      var payload = json[1];
-      emitter.emit(event, payload);
+      emitter.emit.apply(emitter, json);
     });
     emitter.emit('helper end');
   });

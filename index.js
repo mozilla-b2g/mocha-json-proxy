@@ -13,7 +13,8 @@ var EVENTS = [
 var ALLOWED_OBJECTS = ['err'];
 
 function write(event, content) {
-  process.stdout.write(JSON.stringify([event, content]) + '\n');
+  var args = Array.prototype.slice.call(arguments);
+  process.stdout.write(JSON.stringify(args) + '\n');
 }
 
 function cloneValue(value) {
@@ -75,8 +76,7 @@ function defaultHandler(type, runner, payload) {
  */
 var EventHandler = {
   fail: function(event, runner, payload, err) {
-    payload.err = cloneError(err);
-    write(event, cloneValue(payload));
+    write(event, cloneValue(payload), cloneError(err));
   }
 };
 

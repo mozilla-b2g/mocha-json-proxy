@@ -34,7 +34,11 @@ suite('events', function() {
 
   function aggregate(event, emitter) {
     var result = {};
-    emitter.on(event, function(data) {
+    emitter.on(event, function(data, err) {
+      // copy the err property if available.
+      if (err)
+        data.err = err;
+
       result[data.title] = data;
     });
     return result;
@@ -47,18 +51,18 @@ suite('events', function() {
     assert.ok(err.stack, 'err.stack');
   }
 
-  event(['fail', 'test end'], function(emit, done) {
-    var testEnd = aggregate('test end', emit);
+  ['test', 'test end'].forEach(function(eventName) {
+    event(['pass', eventName], function(emit, done) {
+      var testEnd = aggregate('test end', emit);
 
-    emit.on('helper end', function() {
-      isTest(testEnd.sync);
-      isTest(testEnd.async);
-
-      isError(testEnd.async.err);
-      isError(testEnd.sync.err);
-      done();
+      emit.on('helper end', function() {
+        isTest(testEnd.sync);
+        isTest(testEnd.async);
+        done();
+      });
     });
   });
+
 
   event('fail', function(emit, done) {
     var fails = aggregate('fail', emit);
