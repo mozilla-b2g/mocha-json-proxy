@@ -1,0 +1,21 @@
+{
+  "name": "mocha-json-proxy",
+  "version": "0.0.1",
+  "author": "James Lal [:lightsofapollo]",
+  "description": "Mocha JSON proxy reporter",
+  "main": "index.js",
+  "keywords": [
+  ],
+  "dependencies": {
+    "debug": "*"
+  },
+  "devDependencies": {
+    "mocha": "~1.12"
+  },
+  "license": "MIT",
+  "engine": {
+    "node": ">=0.4"
+  },
+  "scripts": {
+  }
+}
