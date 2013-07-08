@@ -24,6 +24,7 @@ suite('events', function() {
     assert.ok(input.fn.indexOf('function') !== -1, 'has function');
     assert.ok(input.title);
     assert.equal(input.type, 'test');
+    assert.ok(input._slow);
 
     if (obj) {
       for (var key in obj) {

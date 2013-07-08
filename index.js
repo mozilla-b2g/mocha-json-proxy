@@ -36,10 +36,6 @@ function cloneTestObject(object) {
     var key = keys[i];
     var value = object[key];
 
-    // skip private keys
-    if (key.indexOf('_') === 0)
-      continue;
-
     // don't copy objects recursively
     if (typeof value === 'object' && ALLOWED_OBJECTS.indexOf(key) === -1)
       continue;
