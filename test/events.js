@@ -105,4 +105,42 @@ suite('events', function() {
     });
   });
 
+  event('start', function(emit, done) {
+    emit.once('start', function() {
+      done();
+    });
+  });
+
+  event('end', function(emit, done) {
+    emit.once('end', function(data) {
+      done();
+    });
+  });
+
+  event(['suites', 'suite (end)'], function(emit, done) {
+    var events = [];
+    var expected = [
+      ['start', ''],
+      ['start', 'a'],
+      ['start', 'b'],
+      ['start', 'c'],
+      ['end', 'c'],
+      ['end', 'b'],
+      ['end', 'a'],
+      ['end', '']
+    ];
+
+    function add(type, data) {
+      events.push([type, data.title]);
+    }
+
+    emit.on('suite', add.bind(null, 'start'));
+    emit.on('suite end', add.bind(null, 'end'));
+
+    emit.once('helper end', function() {
+      assert.deepEqual(events, expected);
+      done();
+    });
+  });
+
 });
