@@ -14,7 +14,13 @@ var ALLOWED_OBJECTS = ['err'];
 
 function write(event, content) {
   var args = Array.prototype.slice.call(arguments);
-  process.stdout.write(JSON.stringify(args) + '\n');
+
+  if (!process.env.MOCHA_PROXY_SEND_ONLY) {
+    process.stdout.write(JSON.stringify(args) + '\n');
+    return;
+  }
+
+  process.send(['mocha-proxy', args]);
 }
 
 function cloneValue(value) {
