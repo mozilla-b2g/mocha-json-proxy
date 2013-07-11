@@ -5,7 +5,7 @@ var exec = require('child_process').exec,
 function runFixture(test, callback) {
   var cmd =
     __dirname + '/../node_modules/.bin/mocha' +
-    ' --ui tdd --reporter ' + __dirname + '/../index ' +
+    ' --ui tdd --reporter ' + __dirname + '/../reporter ' +
     __dirname + '/fixtures/' + test;
 
   var emitter = new EE();
