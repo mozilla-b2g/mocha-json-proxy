@@ -15,7 +15,7 @@ var ALLOWED_OBJECTS = ['err'];
 function write(event, content) {
   var args = Array.prototype.slice.call(arguments);
 
-  if (!process.env.MOCHA_PROXY_SEND_ONLY) {
+  if (!process.env[Reporter.FORK_ENV]) {
     process.stdout.write(JSON.stringify(args) + '\n');
     return;
   }
@@ -88,5 +88,7 @@ function Reporter(runner) {
     runner.on(event, handler.bind(this, event, runner));
   }, this);
 }
+
+Reporter.FORK_ENV = 'MOCHA_PROXY_SEND_ONLY';
 
 module.exports = Reporter;

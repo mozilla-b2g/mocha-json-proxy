@@ -1,6 +1,26 @@
 var exec = require('child_process').exec,
+    fork = require('child_process').fork,
     EE = require('events').EventEmitter,
     debug = require('debug')('mocha-json-proxy:test');
+
+
+function forkFixture(test) {
+  var reporterPath = __dirname + '/../reporter.js';
+  var exec = __dirname + '/../node_modules/.bin/_mocha';
+  var cmd = [
+    '--reporter', reporterPath,
+    __dirname + '/fixtures/' + test
+  ];
+
+  var runnerOpts = {
+    env: {}
+  };
+
+  // turn on the option to send messages directly between processes.
+  runnerOpts.env[require(reporterPath).FORK_ENV] = true;
+
+  return fork(exec, cmd, runnerOpts);
+}
 
 function runFixture(test, callback) {
   var cmd =
@@ -32,3 +52,4 @@ function runFixture(test, callback) {
 
 global.assert = require('assert');
 global.runFixture = runFixture;
+global.forkFixture = forkFixture;
