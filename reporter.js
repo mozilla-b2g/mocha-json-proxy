@@ -83,9 +83,29 @@ var EventHandler = {
 };
 
 function Reporter(runner) {
+  var objects = [];
+  var ids = 1;
+
   EVENTS.forEach(function(event) {
     var handler = EventHandler[event] || defaultHandler;
-    runner.on(event, handler.bind(this, event, runner));
+    handler = handler.bind(this, event, runner);
+    runner.on(event, function() {
+      var args = Array.prototype.slice.call(arguments);
+      var runnable = args[0];
+
+      // when we find an object create a unique ID for it.
+      if (typeof runnable === 'object' && runnable !== null) {
+        var idx = objects.indexOf(runnable);
+        if (idx === -1) {
+          runnable._id = ids++;
+          objects.push(runnable);
+        } else {
+          // assign a unique objects[idx]._id to the runnable.
+          runnable._id = objects[idx]._id;
+        }
+      }
+      handler.apply(this, args);
+    }.bind(this));
   }, this);
 }
 

@@ -1,4 +1,4 @@
-suite('events', function() {
+suite('reporter', function() {
 
   function event(input, callback) {
     var file, type;
@@ -12,7 +12,7 @@ suite('events', function() {
     }
 
 
-    test('event: ' + type, function(done) {
+    return test('event: ' + type, function(done) {
       runFixture(file, function(err, emit) {
         if (err) return done(err);
         callback(emit, done);
@@ -25,12 +25,34 @@ suite('events', function() {
     assert.ok(input.title);
     assert.equal(input.type, 'test');
     assert.ok(input._slow);
+    assert.ok(input._id, 'has _id');
 
     if (obj) {
       for (var key in obj) {
         assert.equal(input[key], obj[key], key);
       }
     }
+  }
+
+  function aggregateAll(events, emitter) {
+    var result = {};
+
+    function add(event, data, err) {
+      if (err)
+        data.err = err;
+
+      if (!result[data.title]) {
+        result[data.title] = [];
+      }
+
+      result[data.title].push(data);
+    }
+
+    events.forEach(function(event) {
+      emitter.on(event, add.bind(null, event));
+    });
+
+    return result;
   }
 
   function aggregate(event, emitter) {
@@ -52,6 +74,21 @@ suite('events', function() {
     assert.ok(err.stack, 'err.stack');
   }
 
+  function testIdsMatch(list) {
+    // usually a test event.
+    var firstEvent = list[list.length - 1];
+
+    // verify the id is valid
+    assert.ok(firstEvent._id, 'has an _id');
+
+    var id = firstEvent._id;
+
+    // verify each id matches the other ids.
+    list.forEach(function(item) {
+      assert.equal(item._id, id);
+    });
+  }
+
   ['test', 'test end'].forEach(function(eventName) {
     event(['pass', eventName], function(emit, done) {
       var testEnd = aggregate('test end', emit);
@@ -64,45 +101,83 @@ suite('events', function() {
     });
   });
 
+  suite('fail', function() {
+    event('fail', function(emit, done) {
+      var fails = aggregate('fail', emit);
 
-  event('fail', function(emit, done) {
-    var fails = aggregate('fail', emit);
+      emit.on('helper end', function() {
+        isTest(fails.sync, { state: 'failed' });
+        isTest(fails.async, { state: 'failed' });
+        isTest(fails.uncaught, { state: 'failed' });
 
-    emit.on('helper end', function() {
-      isTest(fails.sync, { state: 'failed' });
-      isTest(fails.async, { state: 'failed' });
-      isTest(fails.uncaught, { state: 'failed' });
+        assert.ok(fails.sync.err, 'sync has err');
+        assert.ok(fails.async.err, 'async has err');
 
-      assert.ok(fails.sync.err, 'sync has err');
-      assert.ok(fails.async.err, 'async has err');
+        isError(fails.sync.err);
+        isError(fails.async.err);
+        isError(fails.uncaught.err);
+        assert.ok(fails.uncaught.err.uncaught, 'is uncaught');
 
-      isError(fails.sync.err);
-      isError(fails.async.err);
-      isError(fails.uncaught.err);
-      assert.ok(fails.uncaught.err.uncaught, 'is uncaught');
+        done();
+      });
+    });
 
-      done();
+    event(['fail', 'ids'], function(emit, done) {
+      var results =
+        aggregateAll(['test', 'test end', 'fail'], emit);
+
+      emit.once('helper end', function() {
+        testIdsMatch(results.sync);
+        testIdsMatch(results.async);
+        done();
+      });
     });
   });
 
-  event('pass', function(emit, done) {
-    var passed = aggregate('pass', emit);
 
-    emit.on('helper end', function() {
-      assert.ok(passed.sync, 'sync test');
-      assert.ok(passed.async, 'async test');
+  suite('pass', function() {
+    event('pass', function(emit, done) {
+      var passed = aggregate('pass', emit);
 
-      isTest(passed.sync, { state: 'passed' });
-      isTest(passed.async, { state: 'passed' });
-      done();
+      emit.on('helper end', function() {
+        assert.ok(passed.sync, 'sync test');
+        assert.ok(passed.async, 'async test');
+
+        isTest(passed.sync, { state: 'passed' });
+        isTest(passed.async, { state: 'passed' });
+        done();
+      });
+    });
+
+    event(['pass', 'ids'], function(emit, done) {
+      var results =
+        aggregateAll(['test', 'test end', 'pass'], emit);
+
+      emit.once('helper end', function() {
+        testIdsMatch(results.sync);
+        testIdsMatch(results.async);
+        done();
+      });
     });
   });
 
-  event('pending', function(emit, done) {
-    emit.once('pending', function(data) {
-      assert.equal(data.title, 'mepending', 'title');
-      assert.ok(data.pending, 'pending');
-      done();
+  suite('pending', function() {
+    event('pending', function(emit, done) {
+      emit.once('pending', function(data) {
+        assert.equal(data.title, 'mepending', 'title');
+        assert.ok(data.pending, 'pending');
+        done();
+      });
+    });
+
+    event(['pending', 'ids'], function(emit, done) {
+      var results =
+        aggregateAll(['test end', 'pending'], emit);
+
+      emit.once('helper end', function() {
+        testIdsMatch(results.mepending);
+        done();
+      });
     });
   });
 
@@ -121,18 +196,18 @@ suite('events', function() {
   event(['suites', 'suite (end)'], function(emit, done) {
     var events = [];
     var expected = [
-      ['start', ''],
-      ['start', 'a'],
-      ['start', 'b'],
-      ['start', 'c'],
-      ['end', 'c'],
-      ['end', 'b'],
-      ['end', 'a'],
-      ['end', '']
+      ['start', '', 1],
+      ['start', 'a', 2],
+      ['start', 'b', 3],
+      ['start', 'c', 4],
+      ['end', 'c', 4],
+      ['end', 'b', 3],
+      ['end', 'a', 2],
+      ['end', '', 1]
     ];
 
     function add(type, data) {
-      events.push([type, data.title]);
+      events.push([type, data.title, data._id]);
     }
 
     emit.on('suite', add.bind(null, 'start'));
