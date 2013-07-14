@@ -5,6 +5,10 @@
   "description": "Mocha JSON proxy reporter",
   "main": "index.js",
   "keywords": [
+    "mocha",
+    "reporter",
+    "multiprocess",
+    "parallel"
   ],
   "dependencies": {
     "debug": "*"

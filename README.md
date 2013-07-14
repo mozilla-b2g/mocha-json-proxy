@@ -35,6 +35,18 @@ var runner = new Consumer(child);
 new mocha.reporters.Spec(runner); 
 ```
 
+### Supported Reporters
+
+  - Spec
+  - List
+  - Dot
+  - Min
+  - JSON
+  - JSONStream
+  - Nyan,
+  - Progress
+  - List
+
 ## LICENSE
 
 Copyright (c) 2013 Mozilla Foundation
