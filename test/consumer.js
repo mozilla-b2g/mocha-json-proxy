@@ -41,7 +41,26 @@ suite('consumer', function() {
 
     assert.ok(typeof event[0].slow === 'function', 'has .slow');
     assert.equal(event[0].slow(), event[0]._slow);
+
+    assert.ok(typeof event[0].fullTitle === 'function', 'has .fullTitle()');
+
+    if (event[0].parent) {
+      assert.equal(
+        event[0].fullTitle(),
+        event[0].parent.fullTitle() + ' ' + event[0].title
+      );
+    } else {
+      assert.equal(
+        event[0].fullTitle(),
+        event[0].title
+      );
+    }
   }
+
+  test('.suite', function() {
+    assert.ok(subject.suite);
+    assert.ok(subject.suite.root);
+  });
 
   suite('suite', function() {
     test('is runnable', function() {

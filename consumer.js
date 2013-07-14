@@ -21,6 +21,14 @@ function Runnable(event) {
 Runnable.prototype = {
   slow: function() {
     return this._slow;
+  },
+
+  fullTitle: function() {
+    var title = '';
+    if (this.parent)
+      title += this.parent.fullTitle() + ' ';
+
+    return title + this.title;
   }
 };
 
@@ -101,6 +109,10 @@ Consumer.prototype = {
 
     if (name === 'suite') {
       this._suiteStack.push(runnable);
+      // add the root .suite
+      if (!this.suite) {
+        this.suite = runnable;
+      }
     }
 
     this.emit.apply(this, event);
