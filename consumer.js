@@ -24,11 +24,11 @@ Runnable.prototype = {
   },
 
   fullTitle: function() {
-    var title = '';
-    if (this.parent)
-      title += this.parent.fullTitle() + ' ';
-
-    return title + this.title;
+    if (this.parent) {
+      var full = this.parent.fullTitle();
+      if (full) return full + ' ' + this.title;
+    }
+    return this.title;
   }
 };
 

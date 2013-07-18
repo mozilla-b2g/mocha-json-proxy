@@ -1,6 +1,6 @@
 {
   "name": "mocha-json-proxy",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "James Lal [:lightsofapollo]",
   "description": "Mocha JSON proxy reporter",
   "main": "index.js",

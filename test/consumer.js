@@ -44,7 +44,7 @@ suite('consumer', function() {
 
     assert.ok(typeof event[0].fullTitle === 'function', 'has .fullTitle()');
 
-    if (event[0].parent) {
+    if (event[0].parent && event[0].parent.fullTitle()) {
       assert.equal(
         event[0].fullTitle(),
         event[0].parent.fullTitle() + ' ' + event[0].title
