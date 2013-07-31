@@ -1,3 +1,7 @@
+# 0.0.3
+  - fix bug where lack of present main module path this module could not
+    be resolved via require.resolve.
+
 # 0.0.2
   - fix minor inconsistency with mocha
 
