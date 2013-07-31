@@ -1,3 +1,6 @@
+# 0.0.5
+  - fix bugs in error reporting from including Mocha.reporters.Base (regressions)
+
 # 0.0.4
   - inherit from Mocha.reporters.Base
 
