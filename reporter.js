@@ -1,5 +1,8 @@
 var Base = require('mocha').reporters.Base;
 
+// list of taboo properties to never clone
+var TABOO = ['err'];
+
 var EVENTS = [
   'pending',
   'pass',
@@ -44,6 +47,10 @@ function cloneTestObject(object) {
     var key = keys[i];
     var value = object[key];
 
+    // don't clone taboo properties
+    if (TABOO.indexOf(key) !== -1)
+      continue;
+
     // don't copy objects recursively
     if (typeof value === 'object' && ALLOWED_OBJECTS.indexOf(key) === -1)
       continue;
@@ -80,7 +87,12 @@ function defaultHandler(type, runner, payload) {
  */
 var EventHandler = {
   fail: function(event, runner, payload, err) {
-    write(event, cloneValue(payload), cloneError(err));
+    var jsonPayload = cloneValue(payload);
+    // remove .err so it does not override the real error.
+    if (jsonPayload.err)
+      delete jsonPayload.err;
+
+    write(event, jsonPayload, cloneError(err));
   }
 };
 

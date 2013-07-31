@@ -39,7 +39,7 @@ suite('reporter', function() {
 
     function add(event, data, err) {
       if (err)
-        data.err = err;
+        data.eventErr = err;
 
       if (!result[data.title]) {
         result[data.title] = [];
@@ -60,7 +60,7 @@ suite('reporter', function() {
     emitter.on(event, function(data, err) {
       // copy the err property if available.
       if (err)
-        data.err = err;
+        data.sentErr = err;
 
       result[data.title] = data;
     });
@@ -90,10 +90,13 @@ suite('reporter', function() {
   }
 
   ['test', 'test end'].forEach(function(eventName) {
-    event(['pass', eventName], function(emit, done) {
-      var testEnd = aggregate('test end', emit);
+    event(['fail', eventName], function(emit, done) {
+      var testEnd = aggregate(eventName, emit);
 
       emit.on('helper end', function() {
+        assert.ok(!testEnd.sync.err, 'err is not set');
+        assert.ok(!testEnd.async.err, 'err is not set');
+
         isTest(testEnd.sync);
         isTest(testEnd.async);
         done();
@@ -110,13 +113,13 @@ suite('reporter', function() {
         isTest(fails.async, { state: 'failed' });
         isTest(fails.uncaught, { state: 'failed' });
 
-        assert.ok(fails.sync.err, 'sync has err');
-        assert.ok(fails.async.err, 'async has err');
+        assert.ok(fails.sync.sentErr, 'sync has err');
+        assert.ok(fails.async.sentErr, 'async has err');
 
-        isError(fails.sync.err);
-        isError(fails.async.err);
-        isError(fails.uncaught.err);
-        assert.ok(fails.uncaught.err.uncaught, 'is uncaught');
+        isError(fails.sync.sentErr);
+        isError(fails.async.sentErr);
+        isError(fails.uncaught.sentErr);
+        assert.ok(fails.uncaught.sentErr.uncaught, 'is uncaught');
 
         done();
       });
