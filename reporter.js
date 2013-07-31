@@ -1,3 +1,5 @@
+var Base = require('mocha').reporters.Base;
+
 var EVENTS = [
   'pending',
   'pass',
@@ -86,6 +88,8 @@ function Reporter(runner) {
   var objects = [];
   var ids = 1;
 
+  Base.call(this, runner);
+
   EVENTS.forEach(function(event) {
     var handler = EventHandler[event] || defaultHandler;
     handler = handler.bind(this, event, runner);
@@ -108,6 +112,8 @@ function Reporter(runner) {
     }.bind(this));
   }, this);
 }
+
+Reporter.prototype = Object.create(Base.prototype);
 
 Reporter.FORK_ENV = 'MOCHA_PROXY_SEND_ONLY';
 

@@ -13,6 +13,9 @@
   "dependencies": {
     "debug": "*"
   },
+  "peerDependencies": {
+    "mocha": ">=1.5"
+  },
   "devDependencies": {
     "mocha": "~1.12"
   },

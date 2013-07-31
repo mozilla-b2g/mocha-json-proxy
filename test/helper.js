@@ -12,8 +12,13 @@ function forkFixture(test) {
     __dirname + '/fixtures/' + test
   ];
 
+  var env = {};
+  for (var key in process.env) {
+    env[key] = process.env[key];
+  }
+
   var runnerOpts = {
-    env: {}
+    env: env
   };
 
   // turn on the option to send messages directly between processes.
