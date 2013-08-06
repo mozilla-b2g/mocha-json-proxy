@@ -1,1 +1,1 @@
---growl --ui tdd --require test/helper.js
+--ui tdd --require test/helper.js
