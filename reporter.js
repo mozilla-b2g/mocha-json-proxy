@@ -51,6 +51,14 @@ function cloneTestObject(object) {
     if (TABOO.indexOf(key) !== -1)
       continue;
 
+
+    // In order to optimize transmission, don't clone the parent. Annotate its
+    // ID so the consumer can correctly re-create the relationship.
+    if (key === 'parent') {
+      result._parentId = value._id;
+      continue;
+    }
+
     // don't copy objects recursively
     if (typeof value === 'object' && ALLOWED_OBJECTS.indexOf(key) === -1)
       continue;
