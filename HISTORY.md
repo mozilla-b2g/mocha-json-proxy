@@ -1,3 +1,7 @@
+# 0.0.6
+  - fix bug in how the parent was determined. Full descriptions should
+now be correct in failure cases.
+
 # 0.0.5
   - fix bugs in error reporting from including Mocha.reporters.Base (regressions)
 
