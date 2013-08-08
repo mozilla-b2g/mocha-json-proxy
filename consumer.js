@@ -24,11 +24,15 @@ Runnable.prototype = {
   },
 
   fullTitle: function() {
+    var title = '';
     if (this.parent) {
-      var full = this.parent.fullTitle();
-      if (full) return full + ' ' + this.title;
+      title = this.parent.fullTitle();
+      if (title) {
+        title += ' ';
+      }
     }
-    return this.title;
+    title += this.title;
+    return title;
   }
 };
 
@@ -92,20 +96,18 @@ Consumer.prototype = {
       });
     }
 
+    // Re-create the parent based on the referenced ID.
+    if (ref._parentId) {
+      ref.parent = this.referenceObject('suite', { _id: ref._parentId });
+      delete ref._parentId;
+    }
+
     return ref;
   },
 
   transformEvent: function(event) {
     var name = event[0];
     var runnable = event[1] = this.referenceObject(name, event[1]);
-
-    if (
-      name === 'suite' ||
-      name === 'test' ||
-      name === 'pending'
-    ) {
-      runnable.parent = this._suiteStack[this._suiteStack.length - 1];
-    }
 
     if (name === 'suite') {
       this._suiteStack.push(runnable);

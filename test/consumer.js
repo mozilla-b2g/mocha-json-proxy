@@ -69,10 +69,20 @@ suite('consumer', function() {
 
     test('child suite should have reference to parent', function() {
       var parent = emitted.suite[0][0];
-      var child = emitted.suite[1][0];
+      var child1 = emitted.suite[1][0];
+      var child2 = emitted.suite[2][0];
 
       assert.ok(!parent.parent, 'root suite has no parent');
-      assert.strictEqual(child.parent, parent, 'references parent');
+      assert.strictEqual(
+        child1.parent,
+        parent,
+        'first child references parent'
+      );
+      assert.strictEqual(
+        child2.parent,
+        parent,
+        'second child references parent'
+      );
     });
   });
 

@@ -28,6 +28,11 @@ suite('reporter', function() {
       'pass',
       'test end',
       'suite end',
+      'suite',
+      'test',
+      'pass',
+      'test end',
+      'suite end',
       'suite end',
       'end'
     ];
