@@ -133,6 +133,8 @@ function Reporter(runner) {
   }, this);
 }
 
+Reporter.write = write;
+
 Reporter.prototype = Object.create(Base.prototype);
 
 Reporter.FORK_ENV = 'MOCHA_PROXY_SEND_ONLY';
